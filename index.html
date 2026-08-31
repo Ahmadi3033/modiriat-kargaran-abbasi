@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#12365b"><title>مدیریت پروژه و کارگران ساختمان</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--navy:#12365b;--blue:#2563eb;--green:#16834a;--red:#c0392b;--orange:#d97706;--bg:#f3f6fa;--muted:#6b7280}
+*{box-sizing:border-box;font-family:Tahoma,Arial,sans-serif}body{margin:0;background:var(--bg);color:#172033}
+header{background:linear-gradient(135deg,#0f2f50,#1d4f7c);color:#fff;padding:17px 15px 20px;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:18px}header p{margin:5px 0 0;font-size:11px;color:#dbeafe}
+main{max-width:780px;margin:auto;padding:14px 14px 105px}.page{display:none}.page.active{display:block}
+h2{font-size:18px;margin:8px 0 14px}.card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 3px 14px #10204012;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat .label,.small{font-size:12px;color:var(--muted)}.stat .num{font-size:21px;font-weight:bold;margin-top:7px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}.wrap{flex-wrap:wrap}
+button{border:0;border-radius:11px;padding:10px 12px;background:var(--navy);color:white;font-size:13px;cursor:pointer}.secondary{background:#e8eef6;color:#17324d}.green{background:var(--green)}.red{background:var(--red)}.orange{background:var(--orange)}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d7dee8;border-radius:10px;margin-top:5px;background:#fff;font-size:14px}label{display:block;font-size:12px;color:#4b5563;margin-top:9px}
+.worker,.project{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #eef1f5}.worker:last-child,.project:last-child{border:0}.avatar{width:48px;height:48px;border-radius:50%;background:#e6edf6;object-fit:cover;display:grid;place-items:center;font-size:22px;overflow:hidden}.info{flex:1}.info b{font-size:14px}.info span{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.badge{font-size:10px;padding:5px 8px;border-radius:999px;background:#edf4ff;color:#245ea8}.notice{background:#eef6ff;color:#1e4f7a;padding:10px;border-radius:10px;font-size:12px;margin-bottom:10px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;z-index:20;overflow:auto}nav .navin{max-width:780px;margin:auto;display:flex;min-width:600px}nav button{background:transparent;color:#64748b;border-radius:0;padding:10px 5px;font-size:10px;flex:1;white-space:nowrap}nav button.active{color:var(--navy);font-weight:bold;border-top:3px solid var(--navy)}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:end}.modal.show{display:flex}.sheet{background:#fff;width:min(780px,100%);max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px}
+.actions{display:flex;gap:7px;margin-top:14px}.empty{text-align:center;color:#8a94a4;padding:30px 10px}.table{width:100%;border-collapse:collapse;font-size:12px}.table td,.table th{padding:8px;border-bottom:1px solid #e9edf2;text-align:right}.table th{color:#64748b}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.dow{font-size:10px;color:#64748b;padding:5px}.day{min-height:43px;border-radius:9px;background:#f7f9fc;padding:6px;font-size:12px;cursor:pointer}.day.today{border:2px solid var(--blue)}.day.selected{background:var(--navy);color:white}.day.hasdata::after{content:"•";display:block;color:#16a34a;font-size:18px;line-height:7px}
+.att-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #eee}.status-select{width:120px;margin:0;padding:8px}.photo-preview{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #dbe4ef;display:none;margin-top:8px}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:8px}.totalbox{background:#f7f9fc;border-radius:12px;padding:10px;font-size:12px}.money{font-weight:bold}.danger{color:var(--red)}.success{color:var(--green)}
+#lockScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0f2f50,#1d4f7c);z-index:100;color:white;display:none;place-items:center;padding:20px}.lockbox{background:white;color:#172033;width:min(370px,100%);padding:25px;border-radius:22px;text-align:center}.lockbox input{text-align:center;font-size:22px;letter-spacing:6px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div id="lockScreen"><div class="lockbox"><div style="font-size:45px">🔐</div><h2>مدیریت کارگران ساختمان</h2><p class="small">رمز ورود را وارد کنید</p><input id="unlockPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><div class="actions"><button class="green" style="width:100%" onclick="unlock()">ورود</button></div><p id="lockError" class="danger small"></p></div></div>
+<header><h1>🏗️ مدیریت پروژه و کارگران</h1><p>پروژه‌ها • حضور • حقوق • پرداخت • گزارش • بکاپ</p></header>
+<main>
+<section id="dashboard" class="page active"><h2>داشبورد</h2>
+<div class="grid">
+<div class="card stat"><div class="label">کارگران فعال</div><div class="num" id="activeWorkers">۰</div></div>
+<div class="card stat"><div class="label">حاضرین امروز</div><div class="num" id="todayPresent">۰</div></div>
+<div class="card stat"><div class="label">پروژه‌های فعال</div><div class="num" id="activeProjects">۰</div></div>
+<div class="card stat"><div class="label">پرداخت‌های ثبت‌شده</div><div class="num" id="paymentCount">۰</div></div></div>
+<div class="card"><b>خلاصه مالی</b><div id="currencySummary" style="margin-top:8px"></div></div>
+<div class="card"><div class="row"><b>عملیات سریع</b><div><button onclick="showPage('attendance')">📅 حضور</button><button class="secondary" onclick="showPage('projects')">🏗️ پروژه</button></div></div></div>
+</section>
+
+<section id="projects" class="page"><div class="row"><h2>🏗️ پروژه‌ها</h2><button onclick="openProjectModal()">➕ پروژه جدید</button></div><div id="projectsList"></div></section>
+<section id="workers" class="page"><div class="row"><h2>👷 کارگران</h2><button onclick="openWorkerModal()">➕ افزودن</button></div><div class="notice">هر کارگر می‌تواند به یک پروژه اختصاص داده شود و حقوق او به تومان یا افغانی ثبت گردد.</div><div id="workersList"></div></section>
+
+<section id="attendance" class="page"><h2>📅 تقویم و حضور</h2><div class="card">
+<div class="row"><button class="secondary" onclick="changeMonth(-1)">› ماه قبل</button><b id="monthTitle"></b><button class="secondary" onclick="changeMonth(1)">ماه بعد ‹</button></div>
+<div class="calendar" id="calendar" style="margin-top:12px"></div></div>
+<div class="card"><div class="row"><b id="selectedDateLabel"></b><input type="date" id="attendanceDate" style="width:145px;margin:0" onchange="setSelectedDate(this.value)"></div>
+<label>پروژه</label><select id="attendanceProject" onchange="renderAttendanceList()"></select>
+<div id="attendanceList" style="margin-top:10px"></div><div class="actions"><button class="green" onclick="saveAttendance()">ذخیره حضور</button></div></div></section>
+
+<section id="payments" class="page"><div class="row"><h2>💰 پرداخت‌ها</h2><button onclick="openPaymentModal()">➕ ثبت پرداخت</button></div><div id="paymentsList"></div></section>
+<section id="reports" class="page"><h2>📊 گزارش‌ها</h2><div class="card"><label>انتخاب کارگر</label><select id="reportWorker" onchange="renderReport()"></select><div id="reportContent" style="margin-top:14px"></div></div><div class="card"><h3>گزارش پروژه‌ها</h3><div id="projectReports"></div></div></section>
+
+<section id="more" class="page"><h2>⚙️ تنظیمات و بکاپ</h2>
+<div class="card"><h3>🔐 رمز ورود</h3><p class="small">برای محافظت از اطلاعات برنامه یک رمز ۴ تا ۶ رقمی تعیین کنید.</p><input id="newPin" type="password" inputmode="numeric" maxlength="6" placeholder="رمز جدید"><div class="actions"><button onclick="savePin()">ذخیره رمز</button><button class="secondary" onclick="removePin()">حذف رمز</button></div></div>
+<div class="card"><h3>💾 بکاپ و بازیابی</h3><div class="actions"><button class="green" onclick="exportBackup()">📥 گرفتن بکاپ</button><button class="secondary" onclick="$('backupFile').click()">📤 بازیابی بکاپ</button></div><input id="backupFile" type="file" accept=".json" style="display:none" onchange="importBackup(event)"></div>
+<div class="card"><h3>📄 خروجی گزارش</h3><div class="actions"><button class="secondary" onclick="exportCSV()">CSV پرداخت‌ها</button><button class="secondary" onclick="printReport()">🖨️ چاپ / PDF گزارش</button></div></div>
+<div class="card"><h3>نسخه 2.0</h3><p class="small">چند پروژه، تقویم ماهانه، عکس کارگر، رمز ورود، بکاپ و گزارش پروژه اضافه شده است.</p></div>
+</section>
+</main>
+
+<nav><div class="navin">
+<button class="active" data-page="dashboard" onclick="showPage('dashboard')">🏠<br>خانه</button>
+<button data-page="projects" onclick="showPage('projects')">🏗️<br>پروژه</button>
+<button data-page="workers" onclick="showPage('workers')">👷<br>کارگران</button>
+<button data-page="attendance" onclick="showPage('attendance')">📅<br>حضور</button>
+<button data-page="payments" onclick="showPage('payments')">💰<br>پرداخت</button>
+<button data-page="reports" onclick="showPage('reports')">📊<br>گزارش</button>
+<button data-page="more" onclick="showPage('more')">⚙️<br>بیشتر</button>
+</div></nav>
+
+<div class="modal" id="projectModal"><div class="sheet"><div class="row"><h2 id="projectTitle">پروژه جدید</h2><button class="secondary" onclick="closeModal('projectModal')">✕</button></div>
+<input type="hidden" id="projectId"><label>نام پروژه</label><input id="projectName" placeholder="مثلاً ساختمان خیابان آزادی"><label>آدرس (اختیاری)</label><input id="projectAddress"><label>توضیحات</label><textarea id="projectNote" rows="3"></textarea><div class="actions"><button class="green" onclick="saveProject()">ذخیره پروژه</button></div></div></div>
+
+<div class="modal" id="workerModal"><div class="sheet"><div class="row"><h2 id="workerTitle">افزودن کارگر</h2><button class="secondary" onclick="closeModal('workerModal')">✕</button></div>
+<input type="hidden" id="workerId"><label>عکس کارگر (اختیاری)</label><input id="workerPhoto" type="file" accept="image/*" onchange="previewPhoto(this)"><img id="photoPreview" class="photo-preview">
+<label>نام</label><input id="firstName"><label>نام خانوادگی</label><input id="lastName"><label>تخصص / وظیفه</label><input id="job"><label>پروژه</label><select id="workerProject"></select><label>حقوق روزانه</label><input id="dailyWage" type="number" min="0"><label>واحد پول</label><select id="workerCurrency"><option value="AFN">افغانی</option><option value="TOMAN">تومان</option></select><label>شماره تماس</label><input id="phone"><div class="actions"><button class="green" onclick="saveWorker()">ذخیره</button></div></div></div>
+
+<div class="modal" id="paymentModal"><div class="sheet"><div class="row"><h2>ثبت پرداخت</h2><button class="secondary" onclick="closeModal('paymentModal')">✕</button></div><label>کارگر</label><select id="paymentWorker" onchange="syncPaymentCurrency()"></select><label>مبلغ</label><input id="paymentAmount" type="number"><label>واحد پول</label><select id="paymentCurrency"><option value="AFN">افغانی</option><option value="TOMAN">تومان</option></select><label>تاریخ</label><input id="paymentDate" type="date"><label>توضیحات</label><textarea id="paymentNote"></textarea><div class="actions"><button class="green" onclick="savePayment()">ذخیره پرداخت</button></div></div></div>
+
+<script>
+const KEY='construction_worker_manager_v2';const $=x=>document.getElementById(x);
+let db={workers:[],projects:[],attendance:[],payments:[],settings:{pin:''}};
+let selectedDate=new Date().toISOString().slice(0,10),viewDate=new Date();
+const fa=n=>new Intl.NumberFormat('fa-IR').format(Number(n||0));const today=()=>new Date().toISOString().slice(0,10);
+const money=(n,c)=>fa(n)+' '+(c==='TOMAN'?'تومان':'افغانی');const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x){db={...db,...x,settings:{pin:'',...(x.settings||{})}}}}catch(e){}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));if(p==='reports')renderReport()}
+function openModal(x){$(x).classList.add('show')}function closeModal(x){$(x).classList.remove('show')}function name(w){return `${w.firstName} ${w.lastName}`.trim()}
+function projectOptions(selected=''){return '<option value="">بدون پروژه</option>'+db.projects.map(p=>`<option value="${p.id}" ${p.id===selected?'selected':''}>${p.name}</option>`).join('')}
+function openProjectModal(id=''){ $('projectId').value='';$('projectName').value='';$('projectAddress').value='';$('projectNote').value='';$('projectTitle').textContent='پروژه جدید';if(id){let p=db.projects.find(x=>x.id===id);$('projectId').value=p.id;$('projectName').value=p.name;$('projectAddress').value=p.address||'';$('projectNote').value=p.note||'';$('projectTitle').textContent='ویرایش پروژه'}openModal('projectModal')}
+function saveProject(){let n=$('projectName').value.trim();if(!n)return alert('نام پروژه را وارد کنید');let p={id:$('projectId').value||uid(),name:n,address:$('projectAddress').value.trim(),note:$('projectNote').value.trim(),active:true};let i=db.projects.findIndex(x=>x.id===p.id);i>=0?db.projects[i]=p:db.projects.push(p);closeModal('projectModal');persist()}
+function deleteProject(id){if(!confirm('پروژه حذف شود؟ کارگران حذف نمی‌شوند.'))return;db.projects=db.projects.filter(p=>p.id!==id);db.workers.forEach(w=>{if(w.projectId===id)w.projectId=''});persist()}
+function renderProjects(){let el=$('projectsList');el.innerHTML=db.projects.length?db.projects.map(p=>{let wc=db.workers.filter(w=>w.projectId===p.id).length;return `<div class="card project"><div style="font-size:28px">🏗️</div><div class="info"><b>${p.name}</b><span>${p.address||'بدون آدرس'} · ${wc} کارگر</span></div><div><button class="secondary" onclick="openProjectModal('${p.id}')">ویرایش</button><button class="red" onclick="deleteProject('${p.id}')">حذف</button></div></div>`}).join(''):'<div class="card empty">هنوز پروژه‌ای ثبت نشده است.</div>'}
+function previewPhoto(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{$('photoPreview').src=r.result;$('photoPreview').style.display='block'};r.readAsDataURL(f)}
+function openWorkerModal(id=''){['workerId','firstName','lastName','job','dailyWage','phone'].forEach(x=>$(x).value='');$('workerCurrency').value='AFN';$('workerPhoto').value='';$('photoPreview').style.display='none';$('workerProject').innerHTML=projectOptions();$('workerTitle').textContent='افزودن کارگر';if(id){let w=db.workers.find(x=>x.id===id);$('workerId').value=w.id;$('firstName').value=w.firstName;$('lastName').value=w.lastName;$('job').value=w.job||'';$('dailyWage').value=w.dailyWage;$('workerCurrency').value=w.currency;$('phone').value=w.phone||'';$('workerProject').innerHTML=projectOptions(w.projectId);$('photoPreview').src=w.photo||'';$('photoPreview').style.display=w.photo?'block':'none';$('workerTitle').textContent='ویرایش کارگر'}openModal('workerModal')}
+function saveWorker(){let fn=$('firstName').value.trim(),ln=$('lastName').value.trim(),wage=+$('dailyWage').value;if(!fn||!ln||!wage)return alert('نام، نام خانوادگی و حقوق روزانه الزامی است');let old=db.workers.find(w=>w.id===$('workerId').value);let save=(photo)=>{let w={id:$('workerId').value||uid(),firstName:fn,lastName:ln,job:$('job').value.trim(),projectId:$('workerProject').value,dailyWage:wage,currency:$('workerCurrency').value,phone:$('phone').value.trim(),photo:photo||old?.photo||'',active:true};let i=db.workers.findIndex(x=>x.id===w.id);i>=0?db.workers[i]=w:db.workers.push(w);closeModal('workerModal');persist()};let f=$('workerPhoto').files[0];if(f){let r=new FileReader();r.onload=()=>save(r.result);r.readAsDataURL(f)}else save('')}
+function deleteWorker(id){if(confirm('کارگر حذف شود؟')){db.workers=db.workers.filter(w=>w.id!==id);persist()}}
+function renderWorkers(){let el=$('workersList');el.innerHTML=db.workers.length?db.workers.map(w=>{let p=db.projects.find(x=>x.id===w.projectId);return `<div class="card worker"><div class="avatar">${w.photo?`<img src="${w.photo}" style="width:100%;height:100%;object-fit:cover">`:'👷'}</div><div class="info"><b>${name(w)}</b><span>${w.job||'کارگر'} · ${money(w.dailyWage,w.currency)}</span><span>🏗️ ${p?p.name:'بدون پروژه'}</span></div><div><button class="secondary" onclick="openWorkerModal('${w.id}')">ویرایش</button><button class="red" onclick="deleteWorker('${w.id}')">حذف</button></div></div>`}).join(''):'<div class="card empty">هنوز کارگری ثبت نشده است.</div>'}
+function changeMonth(d){viewDate.setMonth(viewDate.getMonth()+d);renderCalendar()}
+function renderCalendar(){let y=viewDate.getFullYear(),m=viewDate.getMonth();$('monthTitle').textContent=new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'long'}).format(viewDate);let days=['ش','ی','د','س','چ','پ','ج'];let first=new Date(y,m,1).getDay();let cells=days.map(x=>`<div class="dow">${x}</div>`);for(let i=0;i<first;i++)cells.push('<div></div>');let count=new Date(y,m+1,0).getDate();for(let d=1;d<=count;d++){let iso=new Date(y,m,d).toISOString().slice(0,10),has=db.attendance.some(a=>a.date===iso),cls=['day',iso===today()?'today':'',iso===selectedDate?'selected':'',has?'hasdata':''].join(' ');cells.push(`<div class="${cls}" onclick="setSelectedDate('${iso}')">${fa(d)}</div>`)}$('calendar').innerHTML=cells.join('')}
+function setSelectedDate(d){selectedDate=d;$('attendanceDate').value=d;$('selectedDateLabel').textContent='تاریخ انتخاب‌شده: '+new Intl.DateTimeFormat('fa-IR',{dateStyle:'long'}).format(new Date(d+'T12:00:00'));renderCalendar();renderAttendanceList()}
+function attendanceProjectOptions(){let cur=$('attendanceProject').value;$('attendanceProject').innerHTML='<option value="">همه کارگران</option>'+db.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');$('attendanceProject').value=cur}
+function renderAttendanceList(){let project=$('attendanceProject').value,workers=db.workers.filter(w=>!project||w.projectId===project);let rec=db.attendance.find(a=>a.date===selectedDate);$('attendanceList').innerHTML=workers.length?workers.map(w=>{let x=rec?.items.find(i=>i.workerId===w.id),s=x?.status||'present';return `<div class="att-row"><div><b>${name(w)}</b><div class="small">${w.job||''}</div></div><select class="status-select" data-worker="${w.id}"><option value="present" ${s==='present'?'selected':''}>🟢 حاضر</option><option value="absent" ${s==='absent'?'selected':''}>🔴 غایب</option><option value="half" ${s==='half'?'selected':''}>🟡 نیمه‌وقت</option></select></div>`}).join(''):'<div class="empty">کارگری برای این پروژه وجود ندارد.</div>'}
+function saveAttendance(){let items=[...document.querySelectorAll('[data-worker]')].map(x=>({workerId:x.dataset.worker,status:x.value}));let old=db.attendance.find(a=>a.date===selectedDate);if(old){let ids=new Set(items.map(x=>x.workerId));old.items=old.items.filter(x=>!ids.has(x.workerId)).concat(items)}else db.attendance.push({date:selectedDate,items});persist();alert('حضور ذخیره شد.')}
+function openPaymentModal(){if(!db.workers.length)return alert('ابتدا کارگر اضافه کنید');$('paymentWorker').innerHTML=db.workers.map(w=>`<option value="${w.id}">${name(w)}</option>`).join('');$('paymentAmount').value='';$('paymentDate').value=today();$('paymentNote').value='';syncPaymentCurrency();openModal('paymentModal')}
+function syncPaymentCurrency(){let w=db.workers.find(x=>x.id===$('paymentWorker').value);$('paymentCurrency').value=w?.currency||'AFN'}
+function savePayment(){let amount=+$('paymentAmount').value;if(!amount)return alert('مبلغ را وارد کنید');db.payments.unshift({id:uid(),workerId:$('paymentWorker').value,amount,currency:$('paymentCurrency').value,date:$('paymentDate').value,note:$('paymentNote').value.trim()});closeModal('paymentModal');persist()}
+function renderPayments(){let el=$('paymentsList');el.innerHTML=db.payments.length?db.payments.map(p=>{let w=db.workers.find(x=>x.id===p.workerId);return `<div class="card row"><div><b>${w?name(w):'کارگر حذف‌شده'}</b><div class="small">${p.date} ${p.note?'· '+p.note:''}</div></div><div><b>${money(p.amount,p.currency)}</b><br><button class="red" style="margin-top:5px;padding:6px" onclick="deletePayment('${p.id}')">حذف</button></div></div>`}).join(''):'<div class="card empty">پرداختی ثبت نشده است.</div>'}
+function deletePayment(id){if(confirm('حذف شود؟')){db.payments=db.payments.filter(p=>p.id!==id);persist()}}
+function units(id){let u=0,days=0,abs=0;db.attendance.forEach(a=>{let x=a.items.find(i=>i.workerId===id);if(x){if(x.status==='present'){u++;days++}else if(x.status==='half'){u+=.5;days++}else abs++}});return{u,days,abs}}
+function renderReportSelect(){let old=$('reportWorker').value;$('reportWorker').innerHTML='<option value="">انتخاب کنید...</option>'+db.workers.map(w=>`<option value="${w.id}">${name(w)}</option>`).join('');if(db.workers.some(w=>w.id===old))$('reportWorker').value=old}
+function renderReport(){let id=$('reportWorker').value,el=$('reportContent');if(!id){el.innerHTML='<div class="empty">یک کارگر را انتخاب کنید.</div>';renderProjectReports();return}let w=db.workers.find(x=>x.id===id),u=units(id),earned=u.u*w.dailyWage,paid=db.payments.filter(p=>p.workerId===id&&p.currency===w.currency).reduce((s,p)=>s+p.amount,0),due=earned-paid;el.innerHTML=`<div class="totals"><div class="totalbox">روزهای کاری<br><b>${fa(u.days)}</b></div><div class="totalbox">غیبت<br><b>${fa(u.abs)}</b></div><div class="totalbox">معادل کارکرد<br><b>${fa(u.u)} روز</b></div><div class="totalbox">حقوق روزانه<br><b>${money(w.dailyWage,w.currency)}</b></div><div class="totalbox">حقوق کل<br><b>${money(earned,w.currency)}</b></div><div class="totalbox">دریافتی<br><b class="success">${money(paid,w.currency)}</b></div></div><div class="card"><b>باقی‌مانده: </b><span class="${due<0?'danger':'success'} money">${money(due,w.currency)}</span></div>`;renderProjectReports()}
+function renderProjectReports(){let el=$('projectReports');el.innerHTML=db.projects.length?db.projects.map(p=>{let ws=db.workers.filter(w=>w.projectId===p.id);let sums={AFN:0,TOMAN:0};ws.forEach(w=>sums[w.currency]+=units(w.id).u*w.dailyWage);return `<div class="row" style="padding:9px 0;border-bottom:1px solid #eee"><b>${p.name}</b><span class="small">حقوق ثبت‌شده: ${money(sums.AFN,'AFN')} | ${money(sums.TOMAN,'TOMAN')}</span></div>`}).join(''):'<div class="small">پروژه‌ای ثبت نشده است.</div>'}
+function dashboard(){let present=(db.attendance.find(a=>a.date===today())?.items||[]).filter(x=>x.status!=='absent').length;$('activeWorkers').textContent=fa(db.workers.length);$('todayPresent').textContent=fa(present);$('activeProjects').textContent=fa(db.projects.length);$('paymentCount').textContent=fa(db.payments.length);let sums={AFN:{paid:0,due:0},TOMAN:{paid:0,due:0}};db.workers.forEach(w=>{let earned=units(w.id).u*w.dailyWage,paid=db.payments.filter(p=>p.workerId===w.id&&p.currency===w.currency).reduce((s,p)=>s+p.amount,0);sums[w.currency].paid+=paid;sums[w.currency].due+=earned-paid});$('currencySummary').innerHTML=['AFN','TOMAN'].map(c=>`<div class="row" style="padding:8px 0;border-bottom:1px solid #eee"><b>${c==='AFN'?'🇦🇫 افغانی':'🇮🇷 تومان'}</b><span class="small">پرداخت: ${money(sums[c].paid,c)} | باقی‌مانده: ${money(sums[c].due,c)}</span></div>`).join('')}
+function savePin(){let p=$('newPin').value;if(!/^\d{4,6}$/.test(p))return alert('رمز باید ۴ تا ۶ رقم باشد');db.settings.pin=p;$('newPin').value='';persist();alert('رمز ذخیره شد.')}
+function removePin(){if(confirm('رمز ورود حذف شود؟')){db.settings.pin='';persist()}}
+function unlock(){if($('unlockPin').value===db.settings.pin){$('lockScreen').style.display='none';$('unlockPin').value='';$('lockError').textContent=''}else $('lockError').textContent='رمز اشتباه است.'}
+function exportBackup(){let b=new Blob([JSON.stringify({app:'مدیریت پروژه و کارگران ساختمان',version:'2.0',createdAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});download(b,'backup-workers-v2-'+today()+'.json')}
+function importBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result).data||JSON.parse(r.result);if(!Array.isArray(x.workers))throw Error();if(confirm('اطلاعات فعلی جایگزین شود؟')){db={...db,...x,settings:{pin:'',...(x.settings||{})}};persist();alert('بازیابی انجام شد.')}}catch{alert('فایل معتبر نیست')}};r.readAsText(f);e.target.value=''}
+function exportCSV(){let rows=[['کارگر','پروژه','تاریخ','مبلغ','واحد پول','توضیحات']];db.payments.forEach(p=>{let w=db.workers.find(x=>x.id===p.workerId),pr=db.projects.find(x=>x.id===w?.projectId);rows.push([w?name(w):'',pr?.name||'',p.date,p.amount,p.currency==='TOMAN'?'تومان':'افغانی',p.note||''])});let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(',')).join('\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'payments-'+today()+'.csv')}
+function download(b,n){let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function printReport(){showPage('reports');setTimeout(()=>window.print(),300)}
+function renderAll(){renderProjects();renderWorkers();attendanceProjectOptions();renderAttendanceList();renderPayments();renderReportSelect();renderCalendar();dashboard()}
+load();$('attendanceDate').value=selectedDate;setSelectedDate(selectedDate);renderAll();if(db.settings.pin){$('lockScreen').style.display='grid'}if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script>
+</body></html>
